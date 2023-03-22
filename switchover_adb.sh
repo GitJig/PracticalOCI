@@ -1,10 +1,15 @@
-# This assumes unique compartment name in tenancy. 
-# Adjust for duplicate compartments
-# Replace <INSERT_COMPARTMENT_NAME> with actual compartment name
-export compname=<INSERT_COMPARTMENT_NAME>
+if [ -z "$1" -o  -z "$2" ]
+then
+    echo "Usage - start_adb.sh <INSERT_COMPARTMENT_NAME> <INSERT_DB_NAME>"
+    exit;
+fi
+# Replace <INSERT_COMPARTMENT_NAME> with actual compartment name (case sensitive)
+# Assumes unique compartment name in tenancy. Adjust for duplicate comparment names
+export compname=$1
 export Compocid=`oci iam compartment list --compartment-id-in-subtree true --all |jq -r ".data[] | select(.name == \"${compname}\") | .id"`
 # Replace <INSERT_DB_NAME> with actual DB name.
-export DBname=<INSERT_DB_NAME>
+export DBname=$2
+
 # Save DB OCID in variable based on name(case sensitive)
 export ATPocid=`oci db autonomous-database list --compartment-id $Compocid --query "data[?contains(\"display-name\",'$DBname')]"|jq -r ".[].id"`
 #This assumes only cross region DG setup.  To be adjusted for both local and cross region DG.
@@ -18,6 +23,15 @@ while true
 do 
 export status=`oci work-requests work-request get --work-request-id $WorkReqOCID|jq -r ".data.status"`
 echo "Switchover request is $status"
+echo "Ctrl-C to exit"
+sleep 10
+done
+
+#check ADB DG recreation status
+while true
+do 
+export status=`oci work-requests work-request list  --compartment-id $Compocid --resource-id $ATPocid --query "data[?status=='ACCEPTED'&&\"operation-type\"=='Recreate Autonomous Data Guard standby']"|jq -r ".[].id"`
+echo "Autonomous Data Guard Standby is $status"
 echo "Ctrl-C to exit"
 sleep 10
 done
