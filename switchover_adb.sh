@@ -29,7 +29,7 @@ do
 export status=`oci work-requests work-request get --work-request-id $WorkReqOCID|jq -r ".data.status"`
 echo "Switchover request is $status"
 echo "Ctrl-C to exit"
-sleep 10
+sleep 20
 done
 
 #check ADB DG recreation status
@@ -40,5 +40,5 @@ do
 export percent_complete_status=`oci work-requests work-request list  --compartment-id $Compocid --resource-id $Peerdbocid --region $PeerRegion --query "data[?status!='SUCCEDED'&&\"operation-type\"=='Recreate Autonomous Data Guard standby']"|jq -r '.[]."percent-complete"'`
 echo "Autonomous Data Guard Standby Recreation %  $percent_complete_status"
 echo "Ctrl-C to exit"
-sleep 10
+sleep 20
 done
