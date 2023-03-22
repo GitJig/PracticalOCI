@@ -1,5 +1,5 @@
-echo " This script must be executed from standby region if using OCI Cloud Shell"
-echo " Use --region flag to switchover command if executing from primary region OCI Cloud Shell"
+echo " This script must be executed from standby region "
+echo " Use --region flag to switchover command if executing from primary region "
 if [ -z "$1" -o  -z "$2" ]
 then
     echo "Usage - switchover_adb.sh <INSERT_COMPARTMENT_NAME> <INSERT_DB_NAME>"
