@@ -18,7 +18,7 @@ export ATPocid=`oci db autonomous-database list --compartment-id $Compocid --que
 # Get DataGuard Peer OCID
 export Peerdbocid=`oci db autonomous-database get --autonomous-database-id $ATPocid|jq -r '.data."peer-db-ids"[0]'`
 #Switchover DB 
-
+echo "Initiating Switchover - Status  update can take few minutes"
 export WorkReqOCID=`oci db autonomous-database switchover --autonomous-database-id $ATPocid --peer-db-id $Peerdbocid |jq -r '."opc-work-request-id"'`
 
 while true
@@ -30,10 +30,12 @@ sleep 10
 done
 
 #check ADB DG recreation status
+#This will only work if there is only 1 active DG recreation request. 
+#Future Todo - Modify to exclude any old request
 while true
 do 
-export status=`oci work-requests work-request list  --compartment-id $Compocid --resource-id $ATPocid --query "data[?status=='ACCEPTED'&&\"operation-type\"=='Recreate Autonomous Data Guard standby']"|jq -r ".[].id"`
-echo "Autonomous Data Guard Standby is $status"
+export percent_complete_status=`oci work-requests work-request list  --compartment-id $Compocid --resource-id $Peerdbocid --region uk-london-1 --query "data[?status!='SUCCEDED'&&\"operation-type\"=='Recreate Autonomous Data Guard standby']"|jq -r '.[]."percent-complete"'`
+echo "Autonomous Data Guard Standby Recreation %  $percent_complete_status"
 echo "Ctrl-C to exit"
 sleep 10
 done
