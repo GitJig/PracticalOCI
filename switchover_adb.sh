@@ -28,24 +28,32 @@ while true
 do 
 export status=`oci work-requests work-request get --work-request-id $WorkReqOCID|jq -r ".data.status"`
 echo "Switchover request is $status"
-echo "Ctrl-C to exit"
-echo "Sleeping 20 seconds"
 #exit the loop once switchover is completed
-if [ $status == "SUCCEEDED"]
+if [ $status == "SUCCEEDED" ]
 then
-    exit
+    break
 fi
+echo "Sleeping 20 seconds"
+echo "Ctrl-C to exit"
 sleep 20
 done
 
 #check ADB DG recreation status
 #This will only work if there is only 1 active DG recreation request. 
 #Future Todo - Modify to exclude any old request
+# Get Active ADB DG recreation work request ID
+export ADBGRecreate_workrequest_id=`oci work-requests work-request list  --compartment-id $Compocid --resource-id $Peerdbocid --region $PeerRegion --query "data[?status!='SUCCEDED'&&\"operation-type\"=='Recreate Autonomous Data Guard standby']"|jq -r '.[].id'`
+
+# Monitor ADB DG recreation status
 while true
 do 
-export percent_complete_status=`oci work-requests work-request list  --compartment-id $Compocid --resource-id $Peerdbocid --region $PeerRegion --query "data[?status!='SUCCEDED'&&\"operation-type\"=='Recreate Autonomous Data Guard standby']"|jq -r '.[]."percent-complete"'`
-echo "Autonomous Data Guard Standby Recreation %  $percent_complete_status"
-echo "Ctrl-C to exit"
+export percent_complete_status=`oci work-requests work-request get --work-request-id $ADBGRecreate_workrequest_id --region $PeerRegion |jq -r '.[]."percent-complete"'`
+echo "Autonomous Data Guard Standby Recreation in $PeerRegion is $percent_complete_status % completed"
+if [ $percent_complete_status == "100.0" ]
+then
+    break
+fi
 echo "Sleeping 20 seconds"
+echo "Ctrl-C to exit"
 sleep 20
 done
