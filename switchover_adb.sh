@@ -29,6 +29,12 @@ do
 export status=`oci work-requests work-request get --work-request-id $WorkReqOCID|jq -r ".data.status"`
 echo "Switchover request is $status"
 echo "Ctrl-C to exit"
+echo "Sleeping 20 seconds"
+#exit the loop once switchover is completed
+if [ $status == "SUCCEEDED"]
+then
+    exit
+fi
 sleep 20
 done
 
@@ -40,5 +46,6 @@ do
 export percent_complete_status=`oci work-requests work-request list  --compartment-id $Compocid --resource-id $Peerdbocid --region $PeerRegion --query "data[?status!='SUCCEDED'&&\"operation-type\"=='Recreate Autonomous Data Guard standby']"|jq -r '.[]."percent-complete"'`
 echo "Autonomous Data Guard Standby Recreation %  $percent_complete_status"
 echo "Ctrl-C to exit"
+echo "Sleeping 20 seconds"
 sleep 20
 done
