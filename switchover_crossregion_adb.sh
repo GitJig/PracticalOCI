@@ -6,7 +6,7 @@ then
     exit;
 fi
 # Replace <INSERT_COMPARTMENT_NAME> with actual compartment name (case sensitive)
-# Assumes unique compartment name in tenancy. Adjust for duplicate comparment names
+# Assumes unique compartment name in tenancy. Adjust for duplicate compartment names
 export compname=$1
 export Compocid=`oci iam compartment list --compartment-id-in-subtree true --all |jq -r ".data[] | select(.name == \"${compname}\") | .id"`
 # Replace <INSERT_DB_NAME> with actual DB name.
