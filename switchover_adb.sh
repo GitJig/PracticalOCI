@@ -42,7 +42,7 @@ done
 #This will only work if there is only 1 active DG recreation request. 
 #Future Todo - Modify to exclude any old request
 # Get Active ADB DG recreation work request ID
-export ADBGRecreate_workrequest_id=`oci work-requests work-request list  --compartment-id $Compocid --resource-id $Peerdbocid --region $PeerRegion --query "data[?status!='SUCCEDED'&&\"operation-type\"=='Recreate Autonomous Data Guard standby']"|jq -r '.[].id'`
+export ADBGRecreate_workrequest_id=`oci work-requests work-request list  --compartment-id $Compocid --resource-id $Peerdbocid --region $PeerRegion --query "data[?status=='ACCEPTED'&&\"operation-type\"=='Recreate Autonomous Data Guard standby']"|jq -r '.[].id'`
 
 # Monitor ADB DG recreation status
 while true
