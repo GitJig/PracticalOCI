@@ -2,7 +2,7 @@ echo " This script must be executed from standby region "
 echo " Use --region flag to switchover command if executing from primary region "
 if [ -z "$1" -o  -z "$2" ]
 then
-    echo "Usage - switchover_adb.sh <INSERT_COMPARTMENT_NAME> <INSERT_DB_NAME>"
+    echo "Usage - switchover_crossregion_adb.sh <INSERT_COMPARTMENT_NAME> <INSERT_DB_NAME>"
     exit;
 fi
 # Replace <INSERT_COMPARTMENT_NAME> with actual compartment name (case sensitive)
@@ -14,7 +14,8 @@ export DBname=$2
 
 # Save DB OCID in variable based on name(case sensitive)
 export ATPocid=`oci db autonomous-database list --compartment-id $Compocid --query "data[?contains(\"display-name\",'$DBname')]"|jq -r ".[].id"`
-#This assumes only cross region DG setup.  To be adjusted for both local and cross region DG.
+
+#This assumes cross region DG setup.  
 # Get DataGuard Peer OCID
 export Peerdbocid=`oci db autonomous-database get --autonomous-database-id $ATPocid|jq -r '.data."peer-db-ids"[0]'`
 #Get Peer Region from Peer OCID
