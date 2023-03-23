@@ -24,6 +24,8 @@ export PeerRegion=`echo  $Peerdbocid|cut -d . -f 4`
 echo "Initiating Switchover - Status  update can take few minutes"
 export WorkReqOCID=`oci db autonomous-database switchover --autonomous-database-id $ATPocid --peer-db-id $Peerdbocid |jq -r '."opc-work-request-id"'`
 
+# Loop to check switchover status. Exit loop when switchover is successful.
+
 while true
 do 
 export status=`oci work-requests work-request get --work-request-id $WorkReqOCID|jq -r ".data.status"`
