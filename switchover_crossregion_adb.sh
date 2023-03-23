@@ -34,11 +34,13 @@ echo "Switchover request is $status"
 #exit the loop once switchover is completed
 if [ $status == "SUCCEEDED" ]
 then
+    #Sleep 1 time before checking DB recreation status
+    sleep 20
     break
 fi
-echo "Sleeping 20 seconds"
+echo "Sleeping 60 seconds"
 echo "Ctrl-C to exit"
-sleep 20
+sleep 60
 done
 
 #check ADB DG recreation status
@@ -56,7 +58,7 @@ if [ $percent_complete_status == "100" ]
 then
     break
 fi
-echo "Sleeping 20 seconds"
+echo "Sleeping 60 seconds"
 echo "Ctrl-C to exit"
-sleep 20
+sleep 60
 done
