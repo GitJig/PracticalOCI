@@ -49,7 +49,7 @@ while true
 do 
 export percent_complete_status=`oci work-requests work-request get --work-request-id $ADBGRecreate_workrequest_id --region $PeerRegion |jq -r '.[]."percent-complete"'`
 echo "Autonomous Data Guard Standby Recreation in $PeerRegion is $percent_complete_status % completed"
-if [ $percent_complete_status == "100.0" ]
+if [ $percent_complete_status == "100" ]
 then
     break
 fi
